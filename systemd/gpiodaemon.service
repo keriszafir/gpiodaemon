@@ -1,4 +1,4 @@
-\[Unit]
+[Unit]
 Description=gpiodaemon - handles GPIO setup for rpi2caster and shutdown/reboot buttons
 After=ssh.service
 
