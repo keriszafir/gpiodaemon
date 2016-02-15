@@ -1,10 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """gpiodaemon - a daemon for setting up and tearing down the Raspberry Pi
 GPIO sysfs interface on given pins. This is supposed to
 run as a privileged user on startup. The daemon handles shutdown and reboot
 button presses."""
 import os
 import time
+import signal
 import gpiozero
 import atexit
 
@@ -57,6 +58,11 @@ def gpio_cleanup():
     os.system('echo "%i" > /sys/class/gpio/unexport' % emergency_gpio)
 
 
+def signal_handler(signum, frame):
+    """Signal handler for SIGTERM and SIGINT"""
+    exit()
+
+
 if __name__ == '__main__':
     # Initialize the LED and buttons
     ready_led = gpiozero.LED(led_gpio)
@@ -74,5 +80,11 @@ if __name__ == '__main__':
     # Do nothing (and wait for interrupts from buttons)
     shutdown_button.when_activated = shutdown
     reboot_button.when_activated = reboot
-    while True:
-        time.sleep(1)
+    # Exit gracefully when received SIGTERM or SIGINT (on exit)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    try:
+        while True:
+            time.sleep(1)
+    except (KeyboardInterrupt, EOFError):
+        exit()
