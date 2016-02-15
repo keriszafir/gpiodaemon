@@ -61,6 +61,7 @@ def main():
     """Main function"""
     try:
         # Initialize the LED and buttons
+        global ready_led
         ready_led = gpiozero.LED(led_gpio, initial_value=True)
         shutdown_button = gpiozero.Button(shutdown_button_gpio)
         reboot_button = gpiozero.Button(reboot_button_gpio)
