@@ -62,8 +62,8 @@ def signal_handler(signum, frame):
 if __name__ == '__main__':
     # Initialize the LED and buttons
     ready_led = gpiozero.LED(led_gpio, initial_value=True)
-    shutdown_button = gpiozero.Button(shutdown_button_gpio, pull_up=True)
-    reboot_button = gpiozero.Button(reboot_button_gpio, pull_up=True)
+    shutdown_button = gpiozero.Button(shutdown_button_gpio, bounce_time=2)
+    reboot_button = gpiozero.Button(reboot_button_gpio, bounce_time=2)
     # Set up a sysfs interface for gpios, guarantee tearing it down on exit
     try:
         gpio_setup()
@@ -72,8 +72,8 @@ if __name__ == '__main__':
         print('You must run this program as root!')
         exit()
     # Do nothing (and wait for interrupts from buttons)
-    shutdown_button.when_activated = shutdown
-    reboot_button.when_activated = reboot
+    shutdown_button.when_pressed = shutdown
+    reboot_button.when_pressed = reboot
     # Exit gracefully when received SIGTERM or SIGINT (on exit)
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
