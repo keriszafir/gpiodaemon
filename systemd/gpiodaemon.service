@@ -3,7 +3,7 @@ Description=gpiodaemon - handles GPIO setup for rpi2caster and shutdown/reboot b
 After=ssh.service
 
 [Service]
-ExecStart=/usr/local/bin/gpiodaemon.py
+ExecStart=/usr/local/bin/gpiodaemon
 Restart=on-abort
 
 [Install]
