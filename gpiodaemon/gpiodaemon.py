@@ -4,7 +4,6 @@ GPIO sysfs interface on given pins. This is supposed to
 run as a privileged user on startup. The daemon handles shutdown and reboot
 button presses."""
 import os
-import time
 import signal
 import gpiozero
 import atexit
@@ -63,22 +62,20 @@ if __name__ == '__main__':
     try:
         # Initialize the LED and buttons
         ready_led = gpiozero.LED(led_gpio, initial_value=True)
-        shutdown_button = gpiozero.Button(shutdown_button_gpio, bounce_time=2)
-        reboot_button = gpiozero.Button(reboot_button_gpio, bounce_time=2)
+        shutdown_button = gpiozero.Button(shutdown_button_gpio)
+        reboot_button = gpiozero.Button(reboot_button_gpio)
         # Set up a sysfs interface for gpios, guarantee tearing it down on exit
         gpio_setup()
         atexit.register(gpio_cleanup)
+        # Do nothing (and wait for interrupts from buttons)
+        shutdown_button.when_pressed = shutdown
+        reboot_button.when_pressed = reboot
+        # Exit gracefully when received SIGTERM or SIGINT (on exit)
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        signal.pause()
     except (OSError, PermissionError, RuntimeError):
         print('You must run this program as root!')
         exit()
-    # Do nothing (and wait for interrupts from buttons)
-    shutdown_button.when_pressed = shutdown
-    reboot_button.when_pressed = reboot
-    # Exit gracefully when received SIGTERM or SIGINT (on exit)
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-    try:
-        while True:
-            time.sleep(1)
     except (KeyboardInterrupt, EOFError):
         exit()
