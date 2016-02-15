@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 """gpiodaemon - a daemon for setting up and tearing down the Raspberry Pi
 GPIO sysfs interface on given pins. This is supposed to
 run as a privileged user on startup. The daemon handles shutdown and reboot
