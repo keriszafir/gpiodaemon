@@ -1,12 +1,10 @@
 from setuptools import setup
 
-long_description = ('GPIODaemon - reboot and shutdown button handler for Raspberry Pi',
-                    '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^',
-                    'This daemon runs on startup as root (via systemd service file ',
-                    'and sets up the inputs and outputs for the shutdown and reboot '
-                    'buttons and a LED for indicating the system status (ready or powering off).')
+with open('README.rst', 'r') as readme_file:
+    long_description = readme_file.read()
+
 setup(name='gpiodaemon',
-      version='1.0',
+      version='1.1',
       description='Raspberry Pi GPIO setup utility for rpi2caster',
       long_description=long_description,
       url='http://github.com/elegantandrogyne/gpiodaemon',
@@ -16,7 +14,7 @@ setup(name='gpiodaemon',
       packages=['gpiodaemon'],
       include_package_data=True,
       data_files=[('/etc/systemd/system', ['systemd/gpiodaemon.service'])],
-      classifiers=['Development Status :: 2 - Pre-Alpha',
+      classifiers=['Development Status :: 5 - Production/Stable',
                    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
                    'Natural Language :: English',
                    'Operating System :: POSIX :: Linux',
