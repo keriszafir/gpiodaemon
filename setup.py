@@ -4,7 +4,7 @@ with open('README.rst', 'r') as readme_file:
     long_description = readme_file.read()
 
 setup(name='gpiodaemon',
-      version='1.2.1',
+      version='1.2.2',
       description='Raspberry Pi GPIO setup utility for rpi2caster',
       long_description=long_description,
       url='http://github.com/elegantandrogyne/gpiodaemon',
