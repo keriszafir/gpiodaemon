@@ -10,9 +10,9 @@ import atexit
 
 # Set up the GPIO numbers:
 sensor_gpio = 17  # photocell input
-shutdown_button_gpio = 22  # shutdown button input, pulled up
+shutdown_button_gpio = 24  # shutdown button input, pulled up
 reboot_button_gpio = 23  # reboot button input, pulled up
-emergency_gpio = 24  # emergency stop button input, pulled up
+emergency_gpio = 22  # emergency stop button input, pulled up
 led_gpio = 18  # "system ready" LED output
 
 
