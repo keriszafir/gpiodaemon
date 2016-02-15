@@ -57,7 +57,8 @@ def signal_handler(signum, frame):
     exit()
 
 
-if __name__ == '__main__':
+def main():
+    """Main function"""
     try:
         # Initialize the LED and buttons
         ready_led = gpiozero.LED(led_gpio, initial_value=True)
@@ -78,3 +79,7 @@ if __name__ == '__main__':
         exit()
     except (KeyboardInterrupt, EOFError):
         exit()
+
+
+if __name__ == '__main__':
+    main()
