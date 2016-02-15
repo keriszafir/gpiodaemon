@@ -68,7 +68,7 @@ if __name__ == '__main__':
     try:
         gpio_setup()
         atexit.register(gpio_cleanup)
-    except RuntimeError:
+    except (OSError, RuntimeError):
         print('You must run this program as root!')
         exit()
     # Do nothing (and wait for interrupts from buttons)
