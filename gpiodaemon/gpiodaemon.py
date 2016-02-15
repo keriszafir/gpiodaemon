@@ -60,12 +60,12 @@ def signal_handler(signum, frame):
 
 
 if __name__ == '__main__':
-    # Initialize the LED and buttons
-    ready_led = gpiozero.LED(led_gpio, initial_value=True)
-    shutdown_button = gpiozero.Button(shutdown_button_gpio, bounce_time=2)
-    reboot_button = gpiozero.Button(reboot_button_gpio, bounce_time=2)
-    # Set up a sysfs interface for gpios, guarantee tearing it down on exit
     try:
+        # Initialize the LED and buttons
+        ready_led = gpiozero.LED(led_gpio, initial_value=True)
+        shutdown_button = gpiozero.Button(shutdown_button_gpio, bounce_time=2)
+        reboot_button = gpiozero.Button(reboot_button_gpio, bounce_time=2)
+        # Set up a sysfs interface for gpios, guarantee tearing it down on exit
         gpio_setup()
         atexit.register(gpio_cleanup)
     except (OSError, PermissionError, RuntimeError):
