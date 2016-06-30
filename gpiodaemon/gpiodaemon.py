@@ -29,20 +29,15 @@ def reboot():
     os.system('shutdown -r now')
 
 
-def gpio_setup():
+def gpio_setup(gpio_number):
     """Export the machine cycle sensor GPIO output as file,
     so that rpi2caster can access it without root privileges
     """
-    # Set up sensor GPIO
-    os.system('echo "%i" > /sys/class/gpio/export' % sensor_gpio)
-    os.system('echo "in" > /sys/class/gpio/gpio%i/direction' % sensor_gpio)
+    # Set up the GPIO
+    os.system('echo "%i" > /sys/class/gpio/export' % gpio_number)
+    os.system('echo "in" > /sys/class/gpio/gpio%i/direction' % gpio_number)
     # Enable generating interrupts on rising and falling edges:
-    os.system('echo "both" > /sys/class/gpio/gpio%i/edge' % sensor_gpio)
-    # set up emergency stop button GPIO
-    os.system('echo "%i" > /sys/class/gpio/export' % emergency_gpio)
-    os.system('echo "in" > /sys/class/gpio/gpio%i/direction' % emergency_gpio)
-    # Enable generating interrupts on rising and falling edges:"""
-    os.system('echo "both" > /sys/class/gpio/gpio%i/edge' % emergency_gpio)
+    os.system('echo "both" > /sys/class/gpio/gpio%i/edge' % gpio_number)
 
 
 def gpio_cleanup():
@@ -63,14 +58,15 @@ def main():
         # Initialize the LED and buttons
         global ready_led
         ready_led = gpiozero.LED(led_gpio, initial_value=True)
-        shutdown_button = gpiozero.Button(shutdown_button_gpio)
-        reboot_button = gpiozero.Button(reboot_button_gpio)
+        shutdown_button = gpiozero.Button(shutdown_button_gpio, hold_time=2)
+        reboot_button = gpiozero.Button(reboot_button_gpio, hold_time=2)
         # Set up a sysfs interface for gpios, guarantee tearing it down on exit
-        gpio_setup()
+        gpio_setup(sensor_gpio)
+        gpio_setup(emergency_gpio)
         atexit.register(gpio_cleanup)
         # Do nothing (and wait for interrupts from buttons)
-        shutdown_button.when_pressed = shutdown
-        reboot_button.when_pressed = reboot
+        shutdown_button.when_held = shutdown
+        reboot_button.when_held = reboot
         # Exit gracefully when received SIGTERM or SIGINT (on exit)
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
