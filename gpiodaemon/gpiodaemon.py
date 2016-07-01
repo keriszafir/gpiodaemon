@@ -62,7 +62,7 @@ def main():
         for gpio in args:
             # Set up the GPIO
             print('Exporting GPIO pin %s' % gpio)
-            run(['echo', '%s' % gpio, '> /sys/class/gpio/export'])
+            run(['echo', '%s' % gpio, '>', '/sys/class/gpio/export'])
             run(['echo', 'in', '>', '/sys/class/gpio/gpio%s/direction' % gpio])
             # Enable generating interrupts on rising and falling edges:
             run(['echo', 'both', '>', '/sys/class/gpio/gpio%s/edge' % gpio])

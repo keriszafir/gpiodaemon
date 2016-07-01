@@ -1,2 +1,2 @@
 include *.txt *.rst
-recursive-include systemd *
+recursive-include systemd *.service
