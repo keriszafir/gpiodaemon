@@ -63,9 +63,6 @@ def main():
             # Export the GPIO to sysfs kernel interface
             with io.open('/sys/class/gpio/export', 'w') as export_file:
                 export_file.write('%s' % gpio)
-            # Set the GPIO as output
-            with io.open('/sys/class/gpio%s/direction' % gpio, 'w') as dirfile:
-                dirfile.write('in')
             # Enable generating interrupts on rising and falling edges:
             with io.open('/sys/class/gpio%s/edge' % gpio, 'w') as edge_file:
                 edge_file.write('both')
