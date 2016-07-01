@@ -38,9 +38,9 @@ def get_config(section_name, option_name, default_value, datatype=int):
 def main():
     """Main function"""
     # Define subroutines
-    def blink(time=0.5, n=3):
+    def blink(time=0.5, num=3):
         """Blink the LED"""
-        ready_led.blink(on_time=0.5, off_time=0.5, n=3, background=False)
+        ready_led.blink(on_time=time, off_time=time, n=num, background=False)
         ready_led.on()
 
     def shutdown():
@@ -59,13 +59,17 @@ def main():
         """Export the machine cycle sensor GPIO output as file,
         so that rpi2caster can access it without root privileges
         """
+        path = '/sys/class/gpio/'
         for gpio in args:
             # Export the GPIO to sysfs kernel interface
-            with io.open('/sys/class/gpio/export', 'w') as export_file:
-                export_file.write('%s' % gpio)
+            with io.open(path + 'export', 'w') as export:
+                export.write('%s' % gpio)
             # Enable generating interrupts on rising and falling edges:
-            with io.open('/sys/class/gpio%s/edge' % gpio, 'w') as edge_file:
-                edge_file.write('both')
+            with io.open(path + 'gpio%s/direction' % gpio, 'w') as direction:
+                direction.write('in')
+            # Enable generating interrupts on rising and falling edges:
+            with io.open(path + 'gpio%s/edge' % gpio, 'w') as edge:
+                edge.write('both')
 
     def gpio_teardown(*args):
         """Unexport the GPIO in sysfs"""
