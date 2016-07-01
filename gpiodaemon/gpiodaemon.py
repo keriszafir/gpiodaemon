@@ -23,15 +23,7 @@ class ExitProgram(Exception):
 
 
 def get_config(section_name, option_name, default_value, datatype=int):
-    """get_config:
-
-    Gets a value for a given parameter from a given name.
-    Returns:
-      -int - if the value is numeric,
-      -boolean - if the value was in one of the true or false aliases,
-      -string otherwise,
-      -None if there is no option or section of that name.
-    """
+    """Gets a value for a given parameter from a given name"""
     try:
         with io.open(CONFIG_PATH, 'r'):
             cfg = configparser.ConfigParser()
@@ -46,16 +38,21 @@ def get_config(section_name, option_name, default_value, datatype=int):
 def main():
     """Main function"""
     # Define subroutines
-    def shutdown():
-        """Shut the system down"""
+    def blink(time=0.5, n=3):
+        """Blink the LED"""
         ready_led.blink(on_time=0.5, off_time=0.5, n=3, background=False)
         ready_led.on()
+
+    def shutdown():
+        """Shut the system down"""
+        print('Shutdown button pressed')
+        blink()
         os.system('shutdown -h now')
 
     def reboot():
         """Shut the system down"""
-        ready_led.blink(on_time=0.5, off_time=0.5, n=3, background=False)
-        ready_led.on()
+        print('Reboot button pressed')
+        blink()
         os.system('shutdown -r now')
 
     def gpio_setup(*args):
@@ -78,6 +75,7 @@ def main():
         """Signal handler for SIGTERM and SIGINT"""
         raise ExitProgram
 
+    # Set up the GPIOs, exit if failed
     try:
         # Get the configuration values for buttons, sensor and LED
         sensor_gpio = get_config('Interface', 'sensor_gpio',
@@ -98,6 +96,7 @@ def main():
     except (OSError, PermissionError, RuntimeError):
         print('You must run this program as root!')
         return 1
+    # All GPIOs are now set up; start waiting for keypress
     try:
         # Set up the buttons to use callbacks
         shutdown_button.when_held = shutdown
@@ -111,8 +110,9 @@ def main():
         pass
     finally:
         # Teardown of the configured GPIO interface
-        ready_led.blink(on_time=0.2, off_time=0.2, n=3, background=False)
+        blink(0.2)
         gpio_teardown(sensor_gpio, emergency_gpio)
+    # Exit successfully
     return 0
 
 
