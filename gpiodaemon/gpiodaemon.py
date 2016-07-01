@@ -64,15 +64,15 @@ def main():
         """
         for gpio in args:
             # Set up the GPIO
-            os.system('echo "%i" > /sys/class/gpio/export' % gpio)
-            os.system('echo "in" > /sys/class/gpio/gpio%i/direction' % gpio)
+            os.system('echo "%s" > /sys/class/gpio/export' % gpio)
+            os.system('echo "in" > /sys/class/gpio/gpio%s/direction' % gpio)
             # Enable generating interrupts on rising and falling edges:
-            os.system('echo "both" > /sys/class/gpio/gpio%i/edge' % gpio)
+            os.system('echo "both" > /sys/class/gpio/gpio%s/edge' % gpio)
 
     def gpio_teardown(*args):
         """Unexport the GPIO in sysfs"""
         for gpio in args:
-            os.system('echo "%i" > /sys/class/gpio/unexport' % gpio)
+            os.system('echo "%s" > /sys/class/gpio/unexport' % gpio)
 
     def signal_handler(*_):
         """Signal handler for SIGTERM and SIGINT"""
