@@ -2,7 +2,7 @@
 GPIO sysfs interface on given pins. This is supposed to
 run as a privileged user on startup. The daemon handles shutdown and reboot
 button presses."""
-import os
+from subprocess import run
 import io
 import signal
 import configparser
@@ -47,13 +47,13 @@ def main():
         """Shut the system down"""
         print('Shutdown button pressed')
         blink()
-        os.system('shutdown -h now')
+        run(['shutdown', '-h', 'now'])
 
     def reboot():
         """Shut the system down"""
         print('Reboot button pressed')
         blink()
-        os.system('shutdown -r now')
+        run(['shutdown', '-r', 'now'])
 
     def gpio_setup(*args):
         """Export the machine cycle sensor GPIO output as file,
@@ -61,15 +61,16 @@ def main():
         """
         for gpio in args:
             # Set up the GPIO
-            os.system('echo "%s" > /sys/class/gpio/export' % gpio)
-            os.system('echo "in" > /sys/class/gpio/gpio%s/direction' % gpio)
+            print('Exporting GPIO pin %s' % gpio)
+            run(['echo', '%s' % gpio, '> /sys/class/gpio/export'])
+            run(['echo', 'in', '>', '/sys/class/gpio/gpio%s/direction' % gpio])
             # Enable generating interrupts on rising and falling edges:
-            os.system('echo "both" > /sys/class/gpio/gpio%s/edge' % gpio)
+            run(['echo', 'both', '>', '/sys/class/gpio/gpio%s/edge' % gpio])
 
     def gpio_teardown(*args):
         """Unexport the GPIO in sysfs"""
         for gpio in args:
-            os.system('echo "%s" > /sys/class/gpio/unexport' % gpio)
+            run(['echo', '%s' % gpio, '>', '/sys/class/gpio/unexport'])
 
     def signal_handler(*_):
         """Signal handler for SIGTERM and SIGINT"""
