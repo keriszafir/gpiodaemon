@@ -60,17 +60,21 @@ def main():
         so that rpi2caster can access it without root privileges
         """
         for gpio in args:
-            # Set up the GPIO
-            print('Exporting GPIO pin %s' % gpio)
-            run(['echo', '%s' % gpio, '>', '/sys/class/gpio/export'])
-            run(['echo', 'in', '>', '/sys/class/gpio/gpio%s/direction' % gpio])
+            # Export the GPIO to sysfs kernel interface
+            with io.open('/sys/class/gpio/export', 'w') as export_file:
+                export_file.write('%s' % gpio)
+            # Set the GPIO as output
+            with io.open('/sys/class/gpio%s/direction' % gpio, 'w') as dirfile:
+                dirfile.write('in')
             # Enable generating interrupts on rising and falling edges:
-            run(['echo', 'both', '>', '/sys/class/gpio/gpio%s/edge' % gpio])
+            with io.open('/sys/class/gpio%s/edge' % gpio, 'w') as edge_file:
+                edge_file.write('both')
 
     def gpio_teardown(*args):
         """Unexport the GPIO in sysfs"""
         for gpio in args:
-            run(['echo', '%s' % gpio, '>', '/sys/class/gpio/unexport'])
+            with io.open('/sys/class/gpio/unexport', 'w') as unexport_file:
+                unexport_file.write('%s' % gpio)
 
     def signal_handler(*_):
         """Signal handler for SIGTERM and SIGINT"""
@@ -111,8 +115,8 @@ def main():
         pass
     finally:
         # Teardown of the configured GPIO interface
-        blink(0.2)
         gpio_teardown(sensor_gpio, emergency_gpio)
+        blink(0.2)
     # Exit successfully
     return 0
 
