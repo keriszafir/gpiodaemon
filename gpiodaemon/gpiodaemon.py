@@ -93,12 +93,14 @@ def main():
                                           DEFAULT_SHUTDOWN_GPIO)
         reboot_button_gpio = get_config('Interface', 'reboot_gpio',
                                         DEFAULT_REBOOT_GPIO)
+        sensor_used = get_config('Interface', 'sensor', 'simulation', str)
         ready_led = gpiozero.LED(led_gpio, initial_value=True)
         # We know GPIO pins so we can create gpiozero objects for them...
         shutdown_button = gpiozero.Button(shutdown_button_gpio, hold_time=2)
         reboot_button = gpiozero.Button(reboot_button_gpio, hold_time=2)
         # Set up a sysfs interface for GPIOs
-        gpio_setup(sensor_gpio, emergency_gpio)
+        if sensor_used == 'sysfs':
+            gpio_setup(sensor_gpio, emergency_gpio)
     except (OSError, PermissionError, RuntimeError):
         print('You must run this program as root!')
         return 1
